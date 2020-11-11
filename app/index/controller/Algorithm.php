@@ -12,7 +12,7 @@ class Algorithm extends BaseController
     /**
      * 冒泡排序-相邻数字比较大小
      */
-    public function bubble()
+    public function bubbleSort()
     {
         $data = $this->data;
         $len = count($data);
@@ -32,7 +32,7 @@ class Algorithm extends BaseController
     /**
      * 选择排序-选择最小数字的位置
      */
-    public function choice()
+    public function choiceSort()
     {
         $data = $this->data;
         $len = count($data);
@@ -51,5 +51,100 @@ class Algorithm extends BaseController
 
         return self::successReturn(['data'=>$data]);
     }
+
+    /**
+     * 插入排序-从后往前对比插入
+     */
+    public function insertSort()
+    {
+        $data = $this->data;
+        $len = count($data);
+        for($a = 1;$a < $len;$a++){
+            $temp = $data[$a];
+            for($b = $a - 1;$b >= 0;$b--){
+                if($temp < $data[$b]){
+                    $data[$b+1] = $data[$b];
+                    $data[$b] = $temp;
+                }else{
+                    break;
+                }
+            }
+        }
+
+        return self::successReturn(['data'=>$data]);
+    }
+
+    /**
+     * 快速排序-以基准左右大小分组递归合并
+     */
+    public function quickSort()
+    {
+        $data = $this->data;
+        $data = $this->quickSortRecursion($data);
+
+        return self::successReturn(['data'=>$data]);
+    }
+
+    protected function quickSortRecursion($data)
+    {
+        $len = count($data);
+
+        if($len <= 1){
+            return $data;
+        }
+
+        $left = [];
+        $right = [];
+
+        for($i = 1;$i < $len;$i++){
+            if($data[$i] < $data[0]){
+                $left[] = $data[$i];
+            }else{
+                $right[] = $data[$i];
+            }
+        }
+
+        $left = $this->quickSortRecursion($left);
+        $right = $this->quickSortRecursion($right);
+
+        return array_merge($left,[$data[0]],$right);
+    }
+
+    /**
+     * 归并排序-以长度平均左右分组递归合并
+     */
+    public function mergeSort()
+    {
+        $data = $this->data;
+        $data = $this->mergeSortRecursion($data);
+
+        return self::successReturn(['data'=>$data]);
+    }
+
+    protected function mergeSortRecursion($data)
+    {
+        $len = count($data);
+
+        if($len <= 1){
+            return $data;
+        }
+
+        $mid = ceil($len / 2);
+
+        $left = array_slice($data,0,$mid);
+        $right = array_slice($data,$mid);
+
+        $left = $this->mergeSortRecursion($left);
+        $right = $this->mergeSortRecursion($right);
+
+        $center = [];
+
+        while(count($left) && count($right)){
+            $center[] = $left[0] < $right[0] ? array_shift($left) : array_shift($right);
+        }
+
+        return array_merge($center,$left,$right);
+    }
+
 
 }
